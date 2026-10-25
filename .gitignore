@@ -1,0 +1,55 @@
+# Binaries and compiled files (Never commit binaries to git)
+bin/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+
+# IDE & Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs and databases
+*.log
+*.sqlite3
+
+# Environment variables & secrets (NEVER commit secrets)
+.env
+.env.*
+!.env.example
+
+# OS generated
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
