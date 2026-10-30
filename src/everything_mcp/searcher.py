@@ -13,6 +13,7 @@ import io
 import msvcrt
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import time
@@ -35,8 +36,18 @@ def format_bytes(size: Optional[int]) -> str:
     return f"{size:.2f} PB"
 
 
+def escape_switches(query: str) -> str:
+    """Quote query tokens starting with '-' or '/' so es.exe reads them as search text, not options.
+
+    Without this, a query like 'foo -export-txt C:\\out.txt' would make es.exe write a file.
+    """
+    tokens = re.findall(r'(?:[^\s"]+|"[^"]*")+', query)
+    safe = [f'"{t.replace(chr(34), "")}"' if t[0] in "-/" else t for t in tokens]
+    return " ".join(safe)
+
+
 class WindowsProcessHelper:
-    """Spawns processes assigned to WinSta0\\Default to bypass Windows desktop isolation."""
+    """Spawns processes on the interactive desktop (WinSta0\\Default) so es.exe can reach Everything's IPC window."""
 
     class STARTUPINFO(ctypes.Structure):
         _fields_ = [
@@ -305,7 +316,8 @@ class EverythingSearcher:
             args.append("/ad")
 
         if path:
-            clean_path = str(path).strip('\'"')
+            # Windows paths cannot contain quotes; removing them stops breaking out of the argument
+            clean_path = str(path).replace('"', "").strip("' ")
             args.append(f'-path "{clean_path}"')
 
         if case_sensitive:
@@ -320,7 +332,7 @@ class EverythingSearcher:
             order = "-descending" if sort_descending else "-ascending"
             args.append(f"-sort {sort}{order}")
 
-        clean_query = query.strip()
+        clean_query = escape_switches(query.strip())
         if clean_query:
             args.append(clean_query)
 

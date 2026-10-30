@@ -17,6 +17,8 @@ Busca cualquier archivo o carpeta entre millones de ficheros en **milisegundos**
 - 🔒 **Privacidad Total y Zero-Leak**:
   - No requiere APIs externas, llaves ni archivos `.env`.
   - Sin servidores HTTP abiertos ni exposición en red local.
+  - Único acceso a red: si no encuentra `es.exe`, lo descarga una sola vez desde la web oficial `https://www.voidtools.com/es.zip` a `%LOCALAPPDATA%\everything-mcp`. Define `EVERYTHING_ES_PATH` con tu propio `es.exe` para evitarlo.
+  - Las búsquedas no pueden inyectar opciones de `es.exe` (como `-export-txt`), así que el servidor nunca escribe archivos.
 - 🛡️ **Win32 Desktop Bridging**: Resuelve automáticamente el aislamiento de ventanas/desktops en agentes autónomos (`WinSta0\Default`), garantizando compatibilidad tanto en escritorios interactivos como en sandboxes de agentes.
 - 🧰 **Herramientas Optimizadas para LLMs**:
   - Salida formateada en Markdown conciso y token-eficiente con metadatos (tamaño legible, fechas ISO, indicador de directorio).
@@ -50,7 +52,7 @@ Busca cualquier archivo o carpeta entre millones de ficheros en **milisegundos**
 
 ```powershell
 # Clonar el repositorio
-git clone <URL_DEL_REPOSITORIO>
+git clone https://github.com/JaviRTX/everything-mcp.git
 cd everything-mcp
 
 # Crear entorno e instalar dependencias

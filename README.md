@@ -17,6 +17,8 @@ Search across millions of files and folders in **milliseconds** by leveraging Ev
 - 🔒 **Total Privacy & Zero-Leak**:
   - No external APIs, secret keys, or `.env` files required.
   - No open HTTP servers or local network exposure.
+  - Only network access: if `es.exe` is not found, it is downloaded once from the official `https://www.voidtools.com/es.zip` into `%LOCALAPPDATA%\everything-mcp`. Set `EVERYTHING_ES_PATH` to your own `es.exe` to skip it.
+  - Search queries cannot inject `es.exe` options (e.g. `-export-txt`), so the server never writes files.
   - Clean source code: **zero `.exe` or `.dll` binaries tracked in version control**.
   - No hardcoded absolute local paths in the codebase.
 - 🛡️ **Win32 Desktop Bridging**: Automatically resolves window/desktop isolation in autonomous agent sandboxes (`WinSta0\Default`), ensuring compatibility in both interactive desktops and agent runner environments.
@@ -52,7 +54,7 @@ Search across millions of files and folders in **milliseconds** by leveraging Ev
 
 ```powershell
 # Clone the repository
-git clone <REPOSITORY_URL>
+git clone https://github.com/JaviRTX/everything-mcp.git
 cd everything-mcp
 
 # Create virtual environment and install dependencies
