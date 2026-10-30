@@ -115,8 +115,9 @@ class WindowsProcessHelper:
         sa.nLength = ctypes.sizeof(cls.SECURITY_ATTRIBUTES)
         sa.bInheritHandle = True
 
+        # es.exe writes piped output in the OEM code page (e.g. cp850), not UTF-8
         if not kernel32.CreatePipe(ctypes.byref(h_read_pipe), ctypes.byref(h_write_pipe), ctypes.byref(sa), 0):
-            proc = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout_sec, shell=False)
+            proc = subprocess.run(cmd, capture_output=True, encoding="oem", errors="replace", timeout=timeout_sec, shell=False)
             return proc.returncode, proc.stdout, proc.stderr
 
         kernel32.SetHandleInformation(h_read_pipe, 1, 0)
@@ -136,7 +137,7 @@ class WindowsProcessHelper:
 
         if not res:
             kernel32.CloseHandle(h_read_pipe)
-            proc = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout_sec, shell=False)
+            proc = subprocess.run(cmd, capture_output=True, encoding="oem", errors="replace", timeout=timeout_sec, shell=False)
             return proc.returncode, proc.stdout, proc.stderr
 
         wait_res = kernel32.WaitForSingleObject(pi.hProcess, int(timeout_sec * 1000))
@@ -149,7 +150,7 @@ class WindowsProcessHelper:
         kernel32.CloseHandle(pi.hThread)
 
         fd = msvcrt.open_osfhandle(h_read_pipe.value, 0)
-        with open(fd, "r", encoding="utf-8", errors="replace") as f:
+        with open(fd, "r", encoding="oem", errors="replace") as f:
             output = f.read()
 
         return exit_code.value, output, ""
@@ -324,8 +325,6 @@ class EverythingSearcher:
             args.append("-case")
         if whole_word:
             args.append("-whole-word")
-        if regex:
-            args.append("-regex")
 
         valid_sorts = ["name", "path", "size", "extension", "date-modified"]
         if sort and sort in valid_sorts:
@@ -334,6 +333,9 @@ class EverythingSearcher:
 
         clean_query = escape_switches(query.strip())
         if clean_query:
+            # -regex takes the next argument as its pattern, so it must sit right before the query
+            if regex:
+                args.append("-regex")
             args.append(clean_query)
 
         full_cmd = " ".join(args)
